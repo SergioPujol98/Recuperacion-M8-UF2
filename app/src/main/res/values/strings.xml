@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RecuperacionUf2_SergioPujol</string>
+    <string name="btnCamara">Camara</string>
 </resources>
