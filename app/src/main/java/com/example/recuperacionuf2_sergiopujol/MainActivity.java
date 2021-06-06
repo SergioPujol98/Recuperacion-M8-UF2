@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -33,18 +35,29 @@ public class MainActivity extends AppCompatActivity {
 
     Button btnCamara;
     ImageView imgView;
+    Button btnEdit;
     public static ArrayList<items> datos = new ArrayList<items>(); //Arraylist que contendra todos los datos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Variables
         btnCamara = findViewById(R.id.btnCamara);
         imgView = findViewById(R.id.imageView_foto);
+        btnEdit = findViewById(R.id.btnEdit);
 
+        //Mostramos los datos al iniciar la aplicacion
+        ListView mostrarDatos = findViewById(R.id.lvFotos);
+        ArrayAdapter adapter = new adaptador(this, MainActivity.datos);
+        mostrarDatos.setAdapter(adapter);
+
+        //Permisos de camara
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 1000);
         }
+        leerDatos(MainActivity.this);//Leemos los datos que tenemos guardados
 
         btnCamara.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +65,9 @@ public class MainActivity extends AppCompatActivity {
                 tomarFoto();
             }
         });
+        //btnEdit.setOnClickListener();
     }
+
 
     static final int REQUEST_TAKE_PHOTO = 1;
     private void tomarFoto() {
@@ -103,6 +118,33 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    String comentario = ""; //Pone comentario vacio en la foto
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            items i = new items(comentario, currentPhotoPath);
+            datos.add(i); //Agrego al arraylist los datos
+            guardarDatos(MainActivity.this); //Guardamos los datos en un fichero
+            setContentView(R.layout.activity_main);
+
+            ListView mostrarDatos = findViewById(R.id.lvFotos);
+            ArrayAdapter adapter = new adaptador(this, MainActivity.datos);
+            mostrarDatos.setAdapter(adapter);
+
+            //Volvemos a crear el boton debido a que volvemos a la misma pantalla inicial y el boton queda inutil.
+            Button btnCamara = findViewById(R.id.btnCamara);
+            btnCamara.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    tomarFoto();
+                }
+            });
+        }
+    }
+
 
     public static void guardarDatos(Context context) {
         File archivo = new File(context.getFilesDir(), "datos.txt");
