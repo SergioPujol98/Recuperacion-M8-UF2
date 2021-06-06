@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     Button btnCamara;
     ImageView imgView;
-    Button btnComent;
     public static ArrayList<items> datos = new ArrayList<items>(); //Arraylist que contendra todos los datos
 
     @Override
@@ -51,7 +50,10 @@ public class MainActivity extends AppCompatActivity {
         //Variables
         btnCamara = findViewById(R.id.btnCamara);
         imgView = findViewById(R.id.imageView_foto);
-        btnComent = findViewById(R.id.btnEdit);
+        
+        //LayoutInflater inflater = this.getLayoutInflater();
+        //final View view = inflater.inflate(R.layout.comentariovisual, null);
+        //Button btnComent = (Button) view.findViewById(R.id.btnComent);
 
         //Mostramos los datos al iniciar la aplicacion
         ListView mostrarDatos = findViewById(R.id.lvFotos);
@@ -64,6 +66,14 @@ public class MainActivity extends AppCompatActivity {
         }
         leerDatos(MainActivity.this);//Leemos los datos que tenemos guardados
 
+/*
+        btnComent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+*/
         btnCamara.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,19 +81,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnComent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog();
-            }
-        });
+
 
     }
-    public void openDialog() {
-        ExampleDialog dialog = new ExampleDialog();
-        dialog.show(getSupportFragmentManager(), "Sep");
 
-    }
 
 
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         EditText et = view.findViewById(R.id.infoComentario);
-                        incomentaro = et.getText().toString(); //GUARDO EL NOMBRE QUE HA INTRODUCIDO EL USUARIO EN ESTA VARIABLE
+                        incomentaro = et.getText().toString(); //Guardo el comentario introducido
                         dismiss();
                     }
                 });
