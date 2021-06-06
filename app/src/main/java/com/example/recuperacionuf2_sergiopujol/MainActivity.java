@@ -6,16 +6,21 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button btnCamara;
     ImageView imgView;
-    Button btnEdit;
+    Button btnComent;
     public static ArrayList<items> datos = new ArrayList<items>(); //Arraylist que contendra todos los datos
 
     @Override
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         //Variables
         btnCamara = findViewById(R.id.btnCamara);
         imgView = findViewById(R.id.imageView_foto);
-        btnEdit = findViewById(R.id.btnEdit);
+        btnComent = findViewById(R.id.btnEdit);
 
         //Mostramos los datos al iniciar la aplicacion
         ListView mostrarDatos = findViewById(R.id.lvFotos);
@@ -65,7 +70,19 @@ public class MainActivity extends AppCompatActivity {
                 tomarFoto();
             }
         });
-        //btnEdit.setOnClickListener();
+
+        btnComent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+            }
+        });
+
+    }
+    public void openDialog() {
+        ExampleDialog dialog = new ExampleDialog();
+        dialog.show(getSupportFragmentManager(), "Sep");
+
     }
 
 
@@ -103,9 +120,9 @@ public class MainActivity extends AppCompatActivity {
             if (archivo.exists()) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo));
                 Object obj = ois.readObject();
-                while (obj!=null) { //LEO TODOS LOS JUGADORES DE LA CLASE SERIALIZADA
+                while (obj!=null) {
                     items it = (items) obj;
-                    datos.add(it); //Y LOS AÑADO AL ARRAYLIST
+                    datos.add(it); //Agrego los datos al arraylist
                     obj = ois.readObject();
                 }
                 ois.close();
@@ -165,4 +182,25 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    String incomentaro; //Guarda el comentario del usuario
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.comentariovisual, null);
+
+        //Boton del dialog
+        builder.setView(view)
+                .setPositiveButton("Introducir", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText et = view.findViewById(R.id.infoComentario);
+                        incomentaro = et.getText().toString(); //GUARDO EL NOMBRE QUE HA INTRODUCIDO EL USUARIO EN ESTA VARIABLE
+                        dismiss();
+                    }
+                });
+        return builder.create();
+    }
+
+    public void dismiss() {}
 }
